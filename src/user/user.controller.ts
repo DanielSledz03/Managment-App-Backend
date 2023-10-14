@@ -5,11 +5,15 @@ import {
   UseGuards,
   NotFoundException,
   ParseIntPipe,
+  Patch,
+  Body,
 } from '@nestjs/common';
 import { UserService } from './user.service';
-import { ApiBearerAuth, ApiResponse } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { AdminGuard, JwtGuard } from 'src/auth/guard';
+import { EditUserDto } from './dto';
 
+@ApiTags('User')
 @ApiBearerAuth()
 @Controller('user')
 @UseGuards(JwtGuard, AdminGuard)
@@ -17,14 +21,38 @@ export class UserController {
   constructor(private userService: UserService) {}
 
   @Get('/:id')
-  @ApiResponse({ status: 200, description: 'Returns user data.' })
-  @ApiResponse({ status: 404, description: 'User not found.' })
-  @ApiResponse({ status: 400, description: 'Invalid input.' })
   async getUser(@Param('id', ParseIntPipe) id: number) {
-    const user = await this.userService.getUser(id);
-    if (!user) {
+    try {
+      const user = await this.userService.getUser(id);
+
+      return user;
+    } catch (error) {
       throw new NotFoundException('User not found');
     }
-    return user;
+  }
+
+  @Get()
+  async getAllUser() {
+    try {
+      const users = await this.userService.getAllUsers();
+
+      return users;
+    } catch (error) {
+      throw new NotFoundException('Users not found');
+    }
+  }
+
+  @Patch('/:id/edit')
+  async editUserRate(
+    @Param('id', ParseIntPipe) id: number,
+    @Body() params: EditUserDto,
+  ) {
+    try {
+      const user = await this.userService.editUser(id, params);
+
+      return user;
+    } catch (error) {
+      throw error;
+    }
   }
 }

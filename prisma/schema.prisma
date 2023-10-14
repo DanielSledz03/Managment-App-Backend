@@ -18,6 +18,7 @@ model User {
   graphic      String?
   rate         Float?
   isAdmin      Boolean  @default(false) @map("is_admin")
+  archived     Boolean  @default(false)
   shifts       Shift[]
   earnings     Earning[]
   tasks        Task[]

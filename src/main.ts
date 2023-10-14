@@ -13,7 +13,7 @@ async function bootstrap() {
     .setTitle('FXF Managment API')
     .setDescription('The FXF Managment API description')
     .setVersion('1.0')
-    .addTag('V1')
+    .addTag('1.0.0')
     .addBearerAuth()
     .build();
 
