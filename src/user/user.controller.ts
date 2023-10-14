@@ -11,7 +11,7 @@ import {
 import { UserService } from './user.service';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { AdminGuard, JwtGuard } from 'src/auth/guard';
-import { EditUserDto } from './dto';
+import { ChangePasswordDto, EditUserDto } from './dto';
 
 @ApiTags('User')
 @ApiBearerAuth()
@@ -49,6 +49,20 @@ export class UserController {
   ) {
     try {
       const user = await this.userService.editUser(id, params);
+
+      return user;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  @Patch('/:id/change-password')
+  async changePassword(
+    @Param('id', ParseIntPipe) id: number,
+    @Body() params: ChangePasswordDto,
+  ) {
+    try {
+      const user = await this.userService.changePassword(id, params);
 
       return user;
     } catch (error) {

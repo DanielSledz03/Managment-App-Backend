@@ -6,6 +6,8 @@ import {
   IsString,
   MinLength,
   IsOptional,
+  MaxLength,
+  Matches,
 } from 'class-validator';
 
 export class RegisterUserDto {
@@ -35,6 +37,14 @@ export class RegisterUserDto {
   @IsString()
   @IsNotEmpty()
   @MinLength(8)
+  @MaxLength(32)
+  @Matches(
+    /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/,
+    {
+      message:
+        'Hasło musi zawierać co najmniej jedną wielką literę, jedną małą literę, jedną cyfrę i jeden znak specjalny.',
+    },
+  )
   password: string;
 
   @ApiProperty({

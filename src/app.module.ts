@@ -7,6 +7,10 @@ import { ConfigModule } from '@nestjs/config';
 import { UserModule } from './user/user.module';
 import { APP_FILTER } from '@nestjs/core';
 import { AllExceptionsFilter } from './common/filters/GlobalExceptionFilter';
+import { TaskController } from './task/task.controller';
+import { TaskService } from './task/task.service';
+import { TaskModule } from './task/task.module';
+import { UserService } from './user/user.service';
 
 @Module({
   imports: [
@@ -16,14 +20,18 @@ import { AllExceptionsFilter } from './common/filters/GlobalExceptionFilter';
     PrismaModule,
     AuthModule,
     UserModule,
+    TaskModule,
   ],
-  controllers: [AppController],
+  controllers: [AppController, TaskController],
   providers: [
     AppService,
+    UserService,
     {
       provide: APP_FILTER,
       useClass: AllExceptionsFilter,
     },
+    TaskService,
   ],
+  exports: [UserService],
 })
 export class AppModule {}

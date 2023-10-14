@@ -5,7 +5,8 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
-import { EditUserDto } from './dto';
+import { ChangePasswordDto, EditUserDto } from './dto';
+import * as argon from 'argon2';
 
 @Injectable()
 export class UserService {
@@ -84,5 +85,47 @@ export class UserService {
     } catch (error) {
       throw error;
     }
+  }
+
+  async changePassword(id: number, changePasswordDto: ChangePasswordDto) {
+    const user = await this.prisma.user.findUnique({
+      where: {
+        id: id,
+      },
+    });
+
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+
+    if (!this.verifyHashedPassword(changePasswordDto.oldPassword, user.hash)) {
+      throw new ForbiddenException('Old password is incorrect');
+    }
+
+    if (changePasswordDto.newPassword !== changePasswordDto.confirmPassword) {
+      throw new ForbiddenException('New passwords do not match');
+    }
+
+    const hashedNewPassword = await this.hashPassword(
+      changePasswordDto.newPassword,
+    );
+    await this.prisma.user.update({
+      where: { id: id },
+      data: { hash: hashedNewPassword },
+    });
+
+    return HttpStatus.OK;
+  }
+
+  private async hashPassword(password: string): Promise<string> {
+    const hash = await argon.hash(password);
+    return hash;
+  }
+
+  private async verifyHashedPassword(
+    password: string,
+    hashedPassword: string,
+  ): Promise<boolean> {
+    return await argon.verify(hashedPassword, password);
   }
 }
