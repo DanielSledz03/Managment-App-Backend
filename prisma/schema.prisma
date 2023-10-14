@@ -1,0 +1,87 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id           Int      @id @default(autoincrement())
+  adminUserId  Int?     @map("admin_user_id") 
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  name         String
+  email        String   @unique
+  hash         String
+  graphic      String?
+  rate         Float?
+  isAdmin      Boolean  @default(false) @map("is_admin")
+  shifts       Shift[]
+  earnings     Earning[]
+  tasks        Task[]
+
+  // Only the administrator field specifies the fields and references.
+  administrator User?   @relation("UserToAdmin", fields: [adminUserId], references: [id])
+  subordinates  User[]  @relation("UserToAdmin") // No fields or references here.
+
+  @@map("User")
+}
+
+
+model Schedule {
+  id        Int      @id @default(autoincrement())
+  adminId   Int      @map("admin_id")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  month     Int
+  year      Int
+  shifts    Shift[]
+
+  @@map("Schedules")
+}
+
+model Shift {
+  id          Int      @id @default(autoincrement())
+  scheduleId  Int      @map("schedule_id")
+  userId      Int      @map("user_id")
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  date        DateTime
+  startTime   DateTime @map("start_time")
+  endTime     DateTime @map("end_time")
+
+  user        User     @relation(fields: [userId], references: [id])
+  schedule    Schedule @relation(fields: [scheduleId], references: [id])
+
+  @@map("Shifts")
+}
+
+model Earning {
+  id          Int      @id @default(autoincrement())
+  userId      Int      @map("user_id")
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  month       Int
+  hoursWorked Float    @map("hours_worked")
+  earned      Float
+
+  user        User     @relation(fields: [userId], references: [id])
+
+  @@map("Earnings")
+}
+
+model Task {
+  id          Int      @id @default(autoincrement())
+  userId      Int      @map("user_id")
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  title       String
+  description String?
+  isCompleted Boolean  @map("is_completed")
+
+  user        User     @relation(fields: [userId], references: [id])
+
+  @@map("Tasks")
+}
