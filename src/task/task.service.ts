@@ -23,6 +23,16 @@ export class TaskService {
     }
   }
 
+  async getTask(id: number) {
+    try {
+      return await this.prisma.task.findUnique({
+        where: { id },
+      });
+    } catch (error) {
+      throw new NotFoundException('Task not found');
+    }
+  }
+
   async createTask(dto: CreateTaskDto) {
     try {
       const user = await this.user.getUser(dto.userId);

@@ -26,6 +26,11 @@ export class TaskController {
     return await this.taskService.getAllTasks();
   }
 
+  @Get('/:id')
+  async getTask(@Param('id', ParseIntPipe) id: number) {
+    return await this.taskService.getTask(id);
+  }
+
   @Post()
   async createTask(@Body() createTaskDto: CreateTaskDto) {
     return await this.taskService.createTask(createTaskDto);
