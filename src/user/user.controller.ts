@@ -9,7 +9,7 @@ import {
   Body,
 } from '@nestjs/common';
 import { UserService } from './user.service';
-import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { AdminGuard, JwtGuard } from 'src/auth/guard';
 import { ChangePasswordDto, EditUserDto } from './dto';
 
@@ -20,6 +20,9 @@ import { ChangePasswordDto, EditUserDto } from './dto';
 export class UserController {
   constructor(private userService: UserService) {}
 
+  @ApiOperation({
+    summary: 'Get a user by id.',
+  })
   @Get('/:id')
   async getUser(@Param('id', ParseIntPipe) id: number) {
     try {
@@ -31,6 +34,9 @@ export class UserController {
     }
   }
 
+  @ApiOperation({
+    summary: 'Get all users.',
+  })
   @Get()
   async getAllUser() {
     try {
@@ -42,6 +48,9 @@ export class UserController {
     }
   }
 
+  @ApiOperation({
+    summary: 'Edit a user by id.',
+  })
   @Patch('/:id/edit')
   async editUserRate(
     @Param('id', ParseIntPipe) id: number,
@@ -56,6 +65,9 @@ export class UserController {
     }
   }
 
+  @ApiOperation({
+    summary: 'Change password a user by id.',
+  })
   @Patch('/:id/change-password')
   async changePassword(
     @Param('id', ParseIntPipe) id: number,

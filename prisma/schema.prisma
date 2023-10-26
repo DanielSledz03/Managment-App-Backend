@@ -65,6 +65,7 @@ model Earning {
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
   month       Int
+  year        Int
   hoursWorked Float    @map("hours_worked")
   earned      Float
 

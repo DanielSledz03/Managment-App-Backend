@@ -33,6 +33,26 @@ export class TaskService {
     }
   }
 
+  async getTasksByUserId(id: number) {
+    console.log({ id });
+    try {
+      const user = await this.user.getUser(id);
+      if (!user) throw new NotFoundException('User not found');
+    } catch (error) {
+      throw error;
+    }
+
+    try {
+      const tasks = await this.prisma.task.findMany({
+        where: { userId: id },
+      });
+
+      if (tasks.length === 0) throw new NotFoundException('Tasks not found');
+    } catch (error) {
+      throw new NotFoundException('Task not found');
+    }
+  }
+
   async createTask(dto: CreateTaskDto) {
     try {
       const user = await this.user.getUser(dto.userId);

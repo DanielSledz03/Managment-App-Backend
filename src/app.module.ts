@@ -11,6 +11,7 @@ import { TaskController } from './task/task.controller';
 import { TaskService } from './task/task.service';
 import { TaskModule } from './task/task.module';
 import { UserService } from './user/user.service';
+import { EarningsModule } from './earnings/earnings.module';
 
 @Module({
   imports: [
@@ -21,6 +22,7 @@ import { UserService } from './user/user.service';
     AuthModule,
     UserModule,
     TaskModule,
+    EarningsModule,
   ],
   controllers: [AppController, TaskController],
   providers: [
