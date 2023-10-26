@@ -1,33 +1,22 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
+// jwt.strategy.ts
+import { Injectable } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
-import { ExtractJwt, Strategy } from 'passport-jwt';
-import { PrismaService } from '../../prisma/prisma.service';
+import { Strategy, ExtractJwt } from 'passport-jwt';
+import * as admin from 'firebase-admin';
 
 @Injectable()
-export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
-  constructor(
-    config: ConfigService,
-    private prisma: PrismaService,
-  ) {
+export class JwtStrategy extends PassportStrategy(Strategy) {
+  constructor() {
     super({
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
-      secretOrKey: config.get('JWT_SECRET'),
+      ignoreExpiration: false,
+      secretOrKey: 'PLACEHOLDER_SECRET', // TUTAJ: placeholder
     });
   }
 
-  async validate(payload: { sub: number; email: string; isAdmin: boolean }) {
-    const user = await this.prisma.user.findUnique({
-      where: {
-        id: payload.sub,
-      },
-    });
-
-    if (!user) {
-      throw new UnauthorizedException('User not found.');
-    }
-
-    delete user.hash;
-    return user;
+  async validate(payload: any) {
+    // Weryfikacja tokenu z Firebase
+    const decodedToken = await admin.auth().verifyIdToken(payload.token);
+    return { userId: decodedToken.uid };
   }
 }
