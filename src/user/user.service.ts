@@ -17,7 +17,6 @@ export class UserService {
       const user = await this.prisma.user.findUnique({
         where: {
           id: id,
-          isAdmin: false,
         },
       });
 
@@ -32,9 +31,7 @@ export class UserService {
 
   async getAllUsers() {
     try {
-      const users = await this.prisma.user.findMany({
-        where: { isAdmin: false },
-      });
+      const users = await this.prisma.user.findMany();
 
       const newUsers = users.map((user) => {
         delete user.hash;

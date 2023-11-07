@@ -7,83 +7,81 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model User {
-  id           Int      @id @default(autoincrement())
-  adminUserId  Int?     @map("admin_user_id") 
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
-  name         String
-  email        String   @unique
-  hash         String
-  graphic      String?
-  rate         Float?
-  isAdmin      Boolean  @default(false) @map("is_admin")
-  archived     Boolean  @default(false)
-  shifts       Shift[]
-  earnings     Earning[]
-  tasks        Task[]
+model Company {
+  id              Int       @id @default(autoincrement())
+  name            String
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+  administrators  User[]    @relation("CompanyAdministrators")
+  users           CompanyUser[]
 
-  // Only the administrator field specifies the fields and references.
-  administrator User?   @relation("UserToAdmin", fields: [adminUserId], references: [id])
-  subordinates  User[]  @relation("UserToAdmin") // No fields or references here.
-
-  @@map("User")
 }
 
+model User {
+  id                   Int            @id @default(autoincrement())
+  createdAt            DateTime       @default(now())
+  updatedAt            DateTime       @updatedAt
+  name                 String
+  email                String         @unique
+  hash                 String
+  isAdmin              Boolean        @default(false)
+  notifications        Notification[] @relation("UserNotifications")
+  shifts               Shift[]
+  earnings             Earning[]
+  tasks                Task[]
+  administeredCompanies Company[]     @relation("CompanyAdministrators")
+  companies            CompanyUser[]
+}
 
-model Schedule {
-  id        Int      @id @default(autoincrement())
-  adminId   Int      @map("admin_id")
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  month     Int
-  year      Int
-  shifts    Shift[]
+model CompanyUser {
+  company      Company @relation(fields: [companyId], references: [id])
+  companyId    Int
+  user         User    @relation(fields: [userId], references: [id])
+  userId       Int
 
-  @@map("Schedules")
+  @@id([companyId, userId])
+  @@unique([companyId, userId])
 }
 
 model Shift {
   id          Int      @id @default(autoincrement())
-  scheduleId  Int      @map("schedule_id")
-  userId      Int      @map("user_id")
+  userId      Int
+  user        User     @relation(fields: [userId], references: [id])
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
   date        DateTime
-  startTime   DateTime @map("start_time")
-  endTime     DateTime @map("end_time")
-
-  user        User     @relation(fields: [userId], references: [id])
-  schedule    Schedule @relation(fields: [scheduleId], references: [id])
-
-  @@map("Shifts")
+  startTime   DateTime
+  endTime     DateTime
 }
 
 model Earning {
   id          Int      @id @default(autoincrement())
-  userId      Int      @map("user_id")
+  userId      Int
+  user        User     @relation(fields: [userId], references: [id])
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
   month       Int
   year        Int
-  hoursWorked Float    @map("hours_worked")
+  hoursWorked Float
   earned      Float
-
-  user        User     @relation(fields: [userId], references: [id])
-
-  @@map("Earnings")
 }
 
 model Task {
   id          Int      @id @default(autoincrement())
-  userId      Int      @map("user_id")
+  userId      Int
+  user        User     @relation(fields: [userId], references: [id])
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
   title       String
   description String?
-  isCompleted Boolean  @map("is_completed")
+  isCompleted Boolean
+}
 
-  user        User     @relation(fields: [userId], references: [id])
-
-  @@map("Tasks")
+model Notification {
+  id            Int       @id @default(autoincrement())
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  title         String
+  description   String?
+  users         User[]    @relation("UserNotifications")
 }

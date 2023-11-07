@@ -12,6 +12,7 @@ import { TaskService } from './task/task.service';
 import { TaskModule } from './task/task.module';
 import { UserService } from './user/user.service';
 import { EarningsModule } from './earnings/earnings.module';
+import { CompanyModule } from './company/company.module';
 
 @Module({
   imports: [
@@ -23,6 +24,7 @@ import { EarningsModule } from './earnings/earnings.module';
     UserModule,
     TaskModule,
     EarningsModule,
+    CompanyModule,
   ],
   controllers: [AppController, TaskController],
   providers: [

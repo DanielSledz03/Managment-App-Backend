@@ -48,12 +48,12 @@ export class RegisterUserDto {
   password: string;
 
   @ApiProperty({
-    description: 'Id of the administrator',
+    description: 'Id of the company',
     format: 'int',
     example: '1',
   })
   @IsInt()
   @IsNotEmpty()
   @IsOptional()
-  adminUserId: number;
+  companyId: number;
 }

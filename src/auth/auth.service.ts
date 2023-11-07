@@ -16,17 +16,18 @@ export class AuthService {
 
   // This method is used to register a new user.
   async signup(dto: RegisterUserDto) {
-    // Hash the password using argon2.
-    const hash = await argon.hash(dto.password);
-
     try {
+      // Hash the password using argon2.
+      const hash = await argon.hash(dto.password);
+      console.log(dto);
+
       const user = await this.prisma.user.create({
         data: {
           email: dto.email,
           hash,
           name: dto.name,
-          ...(dto.adminUserId !== undefined
-            ? { administrator: { connect: { id: dto.adminUserId } } }
+          ...(dto.companyId !== undefined
+            ? { company: { connect: { id: dto.companyId } } }
             : {}),
         },
       });
