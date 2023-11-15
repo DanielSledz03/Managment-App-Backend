@@ -13,6 +13,7 @@ import { TaskModule } from './task/task.module';
 import { UserService } from './user/user.service';
 import { EarningsModule } from './earnings/earnings.module';
 import { CompanyModule } from './company/company.module';
+import { ShiftsModule } from './shifts/shifts.module';
 
 @Module({
   imports: [
@@ -25,6 +26,7 @@ import { CompanyModule } from './company/company.module';
     TaskModule,
     EarningsModule,
     CompanyModule,
+    ShiftsModule,
   ],
   controllers: [AppController, TaskController],
   providers: [
