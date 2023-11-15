@@ -30,6 +30,6 @@ async function bootstrap() {
   app.use(passport.initialize()); // Dodaj to!
 
   //Cors setup
-  await app.listen(3000);
+  await app.listen(process.env.PORT);
 }
 bootstrap();
