@@ -1,4 +1,8 @@
-import { ForbiddenException, Injectable } from '@nestjs/common';
+import {
+  ForbiddenException,
+  Injectable,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { LoginDto, RegisterUserDto } from './dto';
 import * as argon from 'argon2';
@@ -58,12 +62,11 @@ export class AuthService {
     return this.signToken(user.id, user.email, user.isAdmin);
   }
 
-  // This method is used to sign a JWT token with the user's / admin's id and email.
   async signToken(
     userId: number,
     email: string,
     isAdmin: boolean,
-  ): Promise<{ access_token: string }> {
+  ): Promise<{ access_token: string; refresh_token: string }> {
     const payload = {
       sub: userId,
       email,
@@ -71,13 +74,67 @@ export class AuthService {
     };
     const secret = this.config.get('JWT_SECRET');
 
-    const token = await this.jwt.signAsync(payload, {
-      expiresIn: '15m',
-      secret: secret,
-    });
+    try {
+      const accessToken = await this.jwt.signAsync(payload, {
+        expiresIn: '5m',
+        secret: secret,
+      });
 
-    return {
-      access_token: token,
-    };
+      const refreshToken = await this.jwt.signAsync(payload, {
+        expiresIn: '7d',
+        secret: secret,
+      });
+
+      return {
+        access_token: accessToken,
+        refresh_token: refreshToken,
+      };
+    } catch (error) {
+      throw new Error('Could not sign refresh token');
+    }
+  }
+
+  async verifyToken(refreshToken: string) {
+    try {
+      const secret = this.config.get('JWT_SECRET');
+
+      this.jwt.verify(refreshToken, { secret: secret });
+
+      return { isValid: true };
+    } catch (error) {
+      return { isValid: false };
+    }
+  }
+
+  async refreshToken(token: string) {
+    const secret = this.config.get('JWT_SECRET');
+
+    try {
+      const decoded = this.jwt.verify(token, { secret: secret });
+      if (!decoded) {
+        throw new UnauthorizedException('Invalid token');
+      }
+
+      const user = await this.prisma.user.findUnique({
+        where: {
+          email: decoded.email,
+        },
+      });
+      if (!user) {
+        throw new UnauthorizedException('User not found');
+      }
+
+      const payload = { username: user.name, sub: user.id };
+      const newAccessToken = await this.jwt.signAsync(payload, {
+        expiresIn: '5m',
+        secret: secret,
+      });
+
+      return {
+        access_token: newAccessToken,
+      };
+    } catch (error) {
+      throw new UnauthorizedException('Invalid token');
+    }
   }
 }

@@ -1,4 +1,10 @@
-import { Body, Controller, Post } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  InternalServerErrorException,
+  Post,
+  Req,
+} from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { LoginDto, RegisterUserDto } from './dto';
 import {
@@ -7,6 +13,7 @@ import {
   ApiOperation,
   ApiTags,
 } from '@nestjs/swagger';
+import { Request } from 'express';
 
 @ApiTags('Auth')
 @Controller('auth')
@@ -38,6 +45,32 @@ export class AuthController {
   })
   @Post('signin')
   signin(@Body() dto: LoginDto) {
-    return this.authService.signin(dto);
+    try {
+      return this.authService.signin(dto);
+    } catch (err) {
+      throw new InternalServerErrorException();
+    }
+  }
+
+  @Post('verifyToken')
+  async verifyToken(@Body('refreshToken') refreshToken: string): Promise<any> {
+    try {
+      console.log(refreshToken);
+      return this.authService.verifyToken(refreshToken);
+    } catch (err) {
+      throw new InternalServerErrorException();
+    }
+  }
+
+  @Post('refresh')
+  refresh(@Req() request: Request) {
+    const authHeader = request.headers.authorization;
+
+    if (!authHeader) {
+      return 'No authorization header';
+    }
+
+    const token = authHeader.split(' ')[1];
+    return this.authService.refreshToken(token);
   }
 }

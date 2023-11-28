@@ -7,17 +7,19 @@ import {
   Patch,
   Param,
   ParseIntPipe,
+  Request,
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
-import { AdminGuard, JwtGuard } from 'src/auth/guard';
+import { JwtGuard } from 'src/auth/guard';
 import { TaskService } from './task.service';
 import { CreateTaskDto } from './dto/create-task.dto';
 import { EditTaskDto } from './dto/edit-task.dto';
+import { Task } from '@prisma/client';
 
 @ApiTags('Task')
 @ApiBearerAuth()
 @Controller('task')
-@UseGuards(JwtGuard, AdminGuard)
+@UseGuards(JwtGuard)
 export class TaskController {
   constructor(private readonly taskService: TaskService) {}
 
@@ -25,8 +27,8 @@ export class TaskController {
     summary: 'Get all tasks.',
   })
   @Get()
-  async getAllTasks() {
-    return await this.taskService.getAllTasks();
+  async getAllTasks(@Request() req): Promise<Task[]> {
+    return await this.taskService.getAllTasks(req.user.id);
   }
 
   @ApiOperation({

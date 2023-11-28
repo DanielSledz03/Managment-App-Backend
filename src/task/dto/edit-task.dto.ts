@@ -39,6 +39,7 @@ export class EditTaskDto {
   @IsOptional()
   isCompleted: boolean;
 
+  @IsOptional()
   @ApiProperty({
     description: 'User id',
     format: 'number',

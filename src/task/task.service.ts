@@ -15,9 +15,16 @@ export class TaskService {
     private readonly user: UserService,
   ) {}
 
-  async getAllTasks() {
+  async getAllTasks(id: number) {
     try {
-      return await this.prisma.task.findMany();
+      const user = await this.prisma.user.findUnique({ where: { id } });
+      if (user.isAdmin) {
+        return await this.prisma.task.findMany();
+      } else {
+        return await this.prisma.task.findMany({
+          where: { userId: id },
+        });
+      }
     } catch (error) {
       throw new Error('An error occurred while retrieving the tasks');
     }
@@ -78,14 +85,12 @@ export class TaskService {
 
   async updateTask(id: number, dto: EditTaskDto) {
     try {
-      const user = await this.user.getUser(dto.userId);
       const task = await this.prisma.task.findUnique({
         where: { id },
       });
 
-      if (!user) throw new NotFoundException('User not found');
-
       if (!task) throw new NotFoundException('Task not found');
+      const user = await this.user.getUser(task.userId);
 
       if (!user.isAdmin) {
         return await this.prisma.task.update({

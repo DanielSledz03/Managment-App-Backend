@@ -75,6 +75,7 @@ model Task {
   title       String
   description String?
   isCompleted Boolean
+  priority    Boolean?
 }
 
 model Notification {
