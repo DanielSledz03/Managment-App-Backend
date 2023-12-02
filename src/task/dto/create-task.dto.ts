@@ -3,9 +3,15 @@ import {
   IsNotEmpty,
   IsNumber,
   IsString,
-  IsBoolean,
   IsOptional,
+  IsEnum,
 } from 'class-validator';
+
+enum TaskStatus {
+  completed = 'completed',
+  inprogress = 'inprogress',
+  rejected = 'rejected',
+}
 
 export class CreateTaskDto {
   @ApiProperty({
@@ -27,14 +33,13 @@ export class CreateTaskDto {
   description: string;
 
   @ApiProperty({
-    description: 'Is completed of the task',
-    format: 'boolean',
-    example: false,
+    description: 'Status of the task',
+    enum: TaskStatus,
+    example: TaskStatus.completed,
   })
-  @IsBoolean()
-  @IsNotEmpty()
+  @IsEnum(TaskStatus)
   @IsOptional()
-  isCompleted: boolean;
+  status: TaskStatus;
 
   @ApiProperty({
     description: 'User id',

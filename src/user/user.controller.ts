@@ -16,7 +16,7 @@ import { ChangePasswordDto, EditUserDto } from './dto';
 @ApiTags('User')
 @ApiBearerAuth()
 @Controller('user')
-@UseGuards(JwtGuard, AdminGuard)
+@UseGuards(JwtGuard)
 export class UserController {
   constructor(private userService: UserService) {}
 
@@ -48,6 +48,7 @@ export class UserController {
     }
   }
 
+  @UseGuards(AdminGuard)
   @ApiOperation({
     summary: 'Edit a user by id.',
   })

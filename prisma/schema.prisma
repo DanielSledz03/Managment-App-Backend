@@ -7,6 +7,12 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+enum TaskStatus {
+  completed
+  inprogress
+  rejected
+}
+
 model Company {
   id              Int       @id @default(autoincrement())
   name            String
@@ -67,15 +73,16 @@ model Earning {
 }
 
 model Task {
-  id          Int      @id @default(autoincrement())
-  userId      Int
-  user        User     @relation(fields: [userId], references: [id])
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-  title       String
-  description String?
-  isCompleted Boolean
-  priority    Boolean?
+  id              Int        @id @default(autoincrement())
+  userId          Int
+  user            User       @relation(fields: [userId], references: [id])
+  createdAt       DateTime   @default(now())
+  updatedAt       DateTime   @updatedAt
+  title           String
+  description     String?
+  status          TaskStatus
+  priority        Boolean?
+  rejectionReason String?
 }
 
 model Notification {

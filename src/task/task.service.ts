@@ -69,7 +69,7 @@ export class TaskService {
           data: {
             title: dto.title,
             description: dto.description,
-            isCompleted: dto.isCompleted ?? false, // Provide a default value if dto.isCompleted is undefined
+            status: dto.status ?? 'inprogress',
             user: {
               connect: {
                 id: dto.userId,
@@ -98,7 +98,7 @@ export class TaskService {
           data: {
             title: dto.title ?? task.title,
             description: dto.description ?? task.description,
-            isCompleted: dto.isCompleted ?? task.isCompleted,
+            status: dto.status ?? task.status,
             user: {
               connect: {
                 id: dto.userId ?? task.userId,

@@ -94,6 +94,36 @@ export class AuthService {
     }
   }
 
+  async getUserData(refreshToken: string) {
+    const secret = this.config.get('JWT_SECRET');
+
+    console.log(refreshToken);
+
+    try {
+      const decoded = this.jwt.verify(refreshToken, { secret: secret });
+      if (!decoded) {
+        throw new UnauthorizedException('Invalid token');
+      }
+
+      const user = await this.prisma.user.findUnique({
+        where: {
+          email: decoded.email,
+        },
+      });
+      if (!user) {
+        throw new UnauthorizedException('User not found');
+      }
+
+      delete user.hash;
+
+      return {
+        user: user,
+      };
+    } catch (error) {
+      throw new UnauthorizedException('Invalid token');
+    }
+  }
+
   async verifyToken(refreshToken: string) {
     try {
       const secret = this.config.get('JWT_SECRET');

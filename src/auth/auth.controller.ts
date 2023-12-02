@@ -14,6 +14,7 @@ import {
   ApiTags,
 } from '@nestjs/swagger';
 import { Request } from 'express';
+import { RefreshTokenDto } from './dto/refresh-token.dto';
 
 @ApiTags('Auth')
 @Controller('auth')
@@ -55,8 +56,16 @@ export class AuthController {
   @Post('verifyToken')
   async verifyToken(@Body('refreshToken') refreshToken: string): Promise<any> {
     try {
-      console.log(refreshToken);
       return this.authService.verifyToken(refreshToken);
+    } catch (err) {
+      throw new InternalServerErrorException();
+    }
+  }
+
+  @Post('getData')
+  async getData(@Body() dto: RefreshTokenDto): Promise<any> {
+    try {
+      return this.authService.getUserData(dto.refresh_token);
     } catch (err) {
       throw new InternalServerErrorException();
     }
