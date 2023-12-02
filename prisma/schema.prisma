@@ -80,7 +80,7 @@ model Task {
   updatedAt       DateTime   @updatedAt
   title           String
   description     String?
-  status          TaskStatus
+  status          TaskStatus?
   priority        Boolean?
   rejectionReason String?
 }
