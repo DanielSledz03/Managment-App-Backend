@@ -14,7 +14,7 @@ async function bootstrap() {
     .setDescription('The FXF Managment API description')
     .setVersion('1.0')
     .addTag('1.0.0')
-    .addBearerAuth()
+    // .addBearerAuth()
     .build();
 
   //Swagger setup

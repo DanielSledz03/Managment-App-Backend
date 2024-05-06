@@ -9,6 +9,7 @@ import * as argon from 'argon2';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
+import { ChangePasswordDto } from './dto/change-password.dto';
 
 @Injectable()
 export class AuthService {
@@ -166,5 +167,30 @@ export class AuthService {
     } catch (error) {
       throw new UnauthorizedException('Invalid token');
     }
+  }
+
+  async changePassword(dto: ChangePasswordDto) {
+    const user = await this.prisma.user.findUnique({
+      where: {
+        email: dto.email,
+      },
+    });
+
+    const pwMatches = await argon.verify(user.hash, dto.oldPassword);
+
+    if (!pwMatches) throw new ForbiddenException('Invalid old password');
+
+    const hash = await argon.hash(dto.newPassword);
+
+    await this.prisma.user.update({
+      where: {
+        email: dto.email,
+      },
+      data: {
+        hash,
+      },
+    });
+
+    return { message: 'Password changed successfully' };
   }
 }

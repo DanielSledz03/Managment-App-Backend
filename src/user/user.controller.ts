@@ -14,9 +14,9 @@ import { AdminGuard, JwtGuard } from 'src/auth/guard';
 import { ChangePasswordDto, EditUserDto } from './dto';
 
 @ApiTags('User')
-@ApiBearerAuth()
+// @ApiBearerAuth()
 @Controller('user')
-@UseGuards(JwtGuard)
+// @UseGuards(JwtGuard)
 export class UserController {
   constructor(private userService: UserService) {}
 

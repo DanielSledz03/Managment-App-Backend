@@ -15,6 +15,7 @@ import {
 } from '@nestjs/swagger';
 import { Request } from 'express';
 import { RefreshTokenDto } from './dto/refresh-token.dto';
+import { ChangePasswordDto } from './dto/change-password.dto';
 
 @ApiTags('Auth')
 @Controller('auth')
@@ -48,6 +49,24 @@ export class AuthController {
   signin(@Body() dto: LoginDto) {
     try {
       return this.authService.signin(dto);
+    } catch (err) {
+      throw new InternalServerErrorException();
+    }
+  }
+
+  @ApiCreatedResponse({
+    description: 'Password has been successfully changed.',
+  })
+  @ApiOperation({
+    summary: 'Change user password.',
+  })
+  @ApiInternalServerErrorResponse({
+    description: 'Internal server error.',
+  })
+  @Post('changePassword')
+  async changePassword(@Body() dto: ChangePasswordDto): Promise<any> {
+    try {
+      return this.authService.changePassword(dto);
     } catch (err) {
       throw new InternalServerErrorException();
     }
