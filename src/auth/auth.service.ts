@@ -176,6 +176,8 @@ export class AuthService {
       },
     });
 
+    if (!user) throw new ForbiddenException('User not found');
+
     const pwMatches = await argon.verify(user.hash, dto.oldPassword);
 
     if (!pwMatches) throw new ForbiddenException('Invalid old password');
