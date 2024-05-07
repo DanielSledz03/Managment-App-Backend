@@ -57,7 +57,7 @@ model Shift {
   updatedAt   DateTime @updatedAt
   date        DateTime
   startTime   DateTime
-  endTime     DateTime
+  endTime     DateTime?
 }
 
 model Earning {

@@ -1,11 +1,12 @@
-import { Controller, Get, UseGuards } from '@nestjs/common';
-import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
-import { AdminGuard, JwtGuard } from 'src/auth/guard';
+import { Body, Controller, Get, Patch, Post } from '@nestjs/common';
+import { ApiTags } from '@nestjs/swagger';
 import { ShiftsService } from './shifts.service';
+import { CreateShiftDto } from './dto/create-shift.dto';
+import { EditShiftDto } from './dto/edit-shift.dto';
 
 @ApiTags('Shifts')
-@ApiBearerAuth()
-@UseGuards(JwtGuard, AdminGuard)
+// @ApiBearerAuth()
+// @UseGuards(JwtGuard, AdminGuard)
 @Controller('shifts')
 export class ShiftsController {
   constructor(private readonly shiftService: ShiftsService) {}
@@ -13,5 +14,15 @@ export class ShiftsController {
   @Get()
   async getShifts() {
     return await this.shiftService.getShifts();
+  }
+
+  @Post('create')
+  async createShift(@Body() createShiftDto: CreateShiftDto) {
+    return await this.shiftService.createShift(createShiftDto);
+  }
+
+  @Patch()
+  async updateShift(@Body() editShiftDto: EditShiftDto) {
+    return await this.shiftService.updateShift(editShiftDto);
   }
 }
