@@ -11,49 +11,44 @@ export class ShiftsService {
     private readonly user: UserService,
   ) {}
 
-  async getShifts() {
-    return await this.prisma.shift.findMany();
+  getShifts() {
+    return this.prisma.shift.findMany();
   }
 
   async createShift(dto: CreateShiftDto) {
-    const user = await this.user.getUser(dto.userId);
-
-    if (!user) {
-      throw new Error('User not found');
-    }
-
-    return await this.prisma.shift.create({
+    await this.ensureUserExists(dto.userId);
+    return this.prisma.shift.create({
       data: {
         startTime: dto.startTime,
         endTime: dto.endTime ?? new Date().toISOString(),
         date: dto.date,
-        user: {
-          connect: {
-            id: user.id,
-          },
-        },
+        userId: dto.userId,
       },
     });
   }
 
-  async updateShift({ id, endTime }: EditShiftDto) {
-    try {
-      const shift = await this.prisma.shift.update({
-        where: {
-          id,
-        },
-        data: {
-          endTime: endTime,
-        },
-      });
+  updateShift(dto: EditShiftDto) {
+    return this.prisma.shift.update({
+      where: { id: dto.id },
+      data: { endTime: dto.endTime },
+    });
+  }
 
-      if (!shift) {
-        throw new Error('Shift not found');
-      }
+  async getUserAllShifts(id: number) {
+    await this.ensureUserExists(id);
+    const shifts = await this.prisma.shift.findMany({
+      where: { userId: id },
+    });
+    if (shifts.length === 0) {
+      throw new Error(`No shifts found for user ID ${id}`);
+    }
+    return shifts;
+  }
 
-      return shift;
-    } catch (error) {
-      throw new Error('Shift not found');
+  private async ensureUserExists(userId: number) {
+    const user = await this.user.getUser(userId);
+    if (!user) {
+      throw new Error(`User with ID ${userId} not found`);
     }
   }
 }

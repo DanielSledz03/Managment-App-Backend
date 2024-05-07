@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsDateString } from 'class-validator';
+import { IsDateString, IsNumber } from 'class-validator';
 
 export class EditShiftDto {
   @ApiProperty({
@@ -15,5 +15,6 @@ export class EditShiftDto {
     format: 'number',
     example: 1,
   })
+  @IsNumber()
   id: number;
 }

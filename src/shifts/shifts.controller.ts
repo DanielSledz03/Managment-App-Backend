@@ -1,4 +1,12 @@
-import { Body, Controller, Get, Patch, Post } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Param,
+  ParseIntPipe,
+  Patch,
+  Post,
+} from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { ShiftsService } from './shifts.service';
 import { CreateShiftDto } from './dto/create-shift.dto';
@@ -24,5 +32,10 @@ export class ShiftsController {
   @Patch()
   async updateShift(@Body() editShiftDto: EditShiftDto) {
     return await this.shiftService.updateShift(editShiftDto);
+  }
+
+  @Get('/user-all-shifts/:id')
+  async getUserAllShifts(@Param('id', ParseIntPipe) id: number) {
+    return await this.shiftService.getUserAllShifts(id);
   }
 }
