@@ -93,7 +93,7 @@ model Bonus {
   updatedAt   DateTime @updatedAt
   amount      Float
   description String
-  date        DateTime
+  date        DateTime //usuń
 }
 
 model Penalty {
@@ -104,5 +104,5 @@ model Penalty {
   updatedAt   DateTime @updatedAt
   amount      Float
   description String
-  date        DateTime
+  date        DateTime //usuń
 }

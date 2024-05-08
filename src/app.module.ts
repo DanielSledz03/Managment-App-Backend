@@ -11,9 +11,9 @@ import { TaskController } from './task/task.controller';
 import { TaskService } from './task/task.service';
 import { TaskModule } from './task/task.module';
 import { UserService } from './user/user.service';
-import { EarningsModule } from './earnings/earnings.module';
 import { CompanyModule } from './company/company.module';
 import { ShiftsModule } from './shifts/shifts.module';
+import { BonusModule } from './bonus/bonus.module';
 
 @Module({
   imports: [
@@ -24,9 +24,9 @@ import { ShiftsModule } from './shifts/shifts.module';
     AuthModule,
     UserModule,
     TaskModule,
-    EarningsModule,
     CompanyModule,
     ShiftsModule,
+    BonusModule,
   ],
   controllers: [AppController, TaskController],
   providers: [

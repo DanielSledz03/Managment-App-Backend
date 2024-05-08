@@ -39,9 +39,7 @@ export class ShiftsService {
     const shifts = await this.prisma.shift.findMany({
       where: { userId: id },
     });
-    if (shifts.length === 0) {
-      throw new Error(`No shifts found for user ID ${id}`);
-    }
+
     return shifts;
   }
 
@@ -60,10 +58,6 @@ export class ShiftsService {
       },
     });
 
-    if (shifts.length === 0) {
-      throw new Error(`No shifts found for user ID ${id}`);
-    }
-
     const monthlyShifts = shifts.filter((shift) => {
       const shiftDate = new Date(shift.date);
       return (
@@ -81,10 +75,6 @@ export class ShiftsService {
         userId: id,
       },
     });
-
-    if (shifts.length === 0) {
-      throw new Error(`No shifts found for user ID ${id}`);
-    }
 
     const currentDate = new Date();
 

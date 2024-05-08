@@ -9,8 +9,8 @@ import {
   Body,
 } from '@nestjs/common';
 import { UserService } from './user.service';
-import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
-import { AdminGuard, JwtGuard } from 'src/auth/guard';
+import { ApiOperation, ApiTags } from '@nestjs/swagger';
+import { AdminGuard } from 'src/auth/guard';
 import { ChangePasswordDto, EditUserDto } from './dto';
 
 @ApiTags('User')
