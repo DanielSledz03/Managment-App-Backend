@@ -51,4 +51,58 @@ export class ShiftsService {
       throw new Error(`User with ID ${userId} not found`);
     }
   }
+
+  async getUserMonthlyShifts(id: number, year: number, month: number) {
+    await this.ensureUserExists(id);
+    const shifts = await this.prisma.shift.findMany({
+      where: {
+        userId: id,
+      },
+    });
+
+    if (shifts.length === 0) {
+      throw new Error(`No shifts found for user ID ${id}`);
+    }
+
+    const monthlyShifts = shifts.filter((shift) => {
+      const shiftDate = new Date(shift.date);
+      return (
+        shiftDate.getFullYear() === year && shiftDate.getUTCMonth() === month
+      );
+    });
+
+    return monthlyShifts;
+  }
+
+  async getUserTodayShifts(id: number) {
+    await this.ensureUserExists(id);
+    const shifts = await this.prisma.shift.findMany({
+      where: {
+        userId: id,
+      },
+    });
+
+    if (shifts.length === 0) {
+      throw new Error(`No shifts found for user ID ${id}`);
+    }
+
+    const currentDate = new Date();
+
+    const todayDay =
+      currentDate.getDate().toString() +
+      currentDate.getMonth().toString() +
+      currentDate.getFullYear().toString();
+
+    const todayShifts = shifts.filter((shift) => {
+      const shiftDate = new Date(shift.date);
+      const shiftDay =
+        shiftDate.getDate().toString() +
+        shiftDate.getMonth().toString() +
+        shiftDate.getFullYear().toString();
+      console.log(todayDay, shiftDay);
+      return todayDay === shiftDay;
+    });
+
+    return todayShifts;
+  }
 }

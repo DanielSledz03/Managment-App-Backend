@@ -38,4 +38,18 @@ export class ShiftsController {
   async getUserAllShifts(@Param('id', ParseIntPipe) id: number) {
     return await this.shiftService.getUserAllShifts(id);
   }
+
+  @Get('user-today-shifts/:id')
+  async getUserTodayShifts(@Param('id', ParseIntPipe) id: number) {
+    return await this.shiftService.getUserTodayShifts(id);
+  }
+
+  @Get('user-monthly-shifts/:id/:month/:year')
+  async getUserMonthlyShifts(
+    @Param('id', ParseIntPipe) id: number,
+    @Param('year', ParseIntPipe) year: number,
+    @Param('month', ParseIntPipe) month: number,
+  ) {
+    return await this.shiftService.getUserMonthlyShifts(id, year, month);
+  }
 }
