@@ -33,10 +33,12 @@ model User {
   isAdmin              Boolean        @default(false)
   notifications        Notification[] @relation("UserNotifications")
   shifts               Shift[]
-  earnings             Earning[]
   tasks                Task[]
   administeredCompanies Company[]     @relation("CompanyAdministrators")
   companies            CompanyUser[]
+  bonuses              Bonus[]
+  penalties            Penalty[]
+  earningPerHour       Float?
 }
 
 model CompanyUser {
@@ -60,17 +62,6 @@ model Shift {
   endTime     DateTime?
 }
 
-model Earning {
-  id          Int      @id @default(autoincrement())
-  userId      Int
-  user        User     @relation(fields: [userId], references: [id])
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-  month       Int
-  year        Int
-  hoursWorked Float
-  earned      Float
-}
 
 model Task {
   id              Int        @id @default(autoincrement())
@@ -92,4 +83,26 @@ model Notification {
   title         String
   description   String?
   users         User[]    @relation("UserNotifications")
+}
+
+model Bonus {
+  id          Int      @id @default(autoincrement())
+  userId      Int
+  user        User     @relation(fields: [userId], references: [id])
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  amount      Float
+  description String
+  date        DateTime
+}
+
+model Penalty {
+  id          Int      @id @default(autoincrement())
+  userId      Int
+  user        User     @relation(fields: [userId], references: [id])
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  amount      Float
+  description String
+  date        DateTime
 }
