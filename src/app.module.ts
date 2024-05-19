@@ -13,7 +13,7 @@ import { TaskModule } from './task/task.module';
 import { UserService } from './user/user.service';
 import { CompanyModule } from './company/company.module';
 import { ShiftsModule } from './shifts/shifts.module';
-import { BonusModule } from './bonus/bonus.module';
+import { BonusModule } from './rewards/reward.module';
 
 @Module({
   imports: [
