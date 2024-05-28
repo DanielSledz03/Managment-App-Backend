@@ -55,6 +55,8 @@ export class TaskService {
       });
 
       if (tasks.length === 0) throw new NotFoundException('Tasks not found');
+
+      return tasks;
     } catch (error) {
       throw new NotFoundException('Task not found');
     }

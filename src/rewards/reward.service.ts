@@ -21,7 +21,6 @@ export class RewardService {
       return this.prisma.bonus.create({
         data: {
           amount: dto.amount,
-          date: dto.date,
           description: dto.description,
           user: {
             connect: {
@@ -74,7 +73,7 @@ export class RewardService {
       return this.prisma.penalty.create({
         data: {
           amount: dto.amount,
-          date: dto.date,
+
           description: dto.description,
           user: {
             connect: {

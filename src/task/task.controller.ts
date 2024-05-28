@@ -17,9 +17,9 @@ import { EditTaskDto } from './dto/edit-task.dto';
 import { Task } from '@prisma/client';
 
 @ApiTags('Task')
-@ApiBearerAuth()
+// @ApiBearerAuth()
 @Controller('task')
-@UseGuards(JwtGuard)
+// @UseGuards(JwtGuard)
 export class TaskController {
   constructor(private readonly taskService: TaskService) {}
 

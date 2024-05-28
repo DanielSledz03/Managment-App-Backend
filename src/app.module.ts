@@ -14,6 +14,7 @@ import { UserService } from './user/user.service';
 import { CompanyModule } from './company/company.module';
 import { ShiftsModule } from './shifts/shifts.module';
 import { BonusModule } from './rewards/reward.module';
+import { WorkScheduleModule } from './work-schedule/work-schedule.module';
 
 @Module({
   imports: [
@@ -27,6 +28,7 @@ import { BonusModule } from './rewards/reward.module';
     CompanyModule,
     ShiftsModule,
     BonusModule,
+    WorkScheduleModule,
   ],
   controllers: [AppController, TaskController],
   providers: [
