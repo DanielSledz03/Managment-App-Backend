@@ -17,29 +17,29 @@ import { BonusModule } from './rewards/reward.module';
 import { WorkScheduleModule } from './work-schedule/work-schedule.module';
 
 @Module({
-  imports: [
-    ConfigModule.forRoot({
-      isGlobal: true,
-    }),
-    PrismaModule,
-    AuthModule,
-    UserModule,
-    TaskModule,
-    CompanyModule,
-    ShiftsModule,
-    BonusModule,
-    WorkScheduleModule,
-  ],
-  controllers: [AppController, TaskController],
-  providers: [
-    AppService,
-    UserService,
-    {
-      provide: APP_FILTER,
-      useClass: AllExceptionsFilter,
-    },
-    TaskService,
-  ],
-  exports: [UserService],
+    imports: [
+        ConfigModule.forRoot({
+            isGlobal: true,
+        }),
+        PrismaModule,
+        AuthModule,
+        UserModule,
+        TaskModule,
+        CompanyModule,
+        ShiftsModule,
+        BonusModule,
+        WorkScheduleModule,
+    ],
+    controllers: [AppController, TaskController],
+    providers: [
+        AppService,
+        UserService,
+        {
+            provide: APP_FILTER,
+            useClass: AllExceptionsFilter,
+        },
+        TaskService,
+    ],
+    exports: [UserService],
 })
 export class AppModule {}

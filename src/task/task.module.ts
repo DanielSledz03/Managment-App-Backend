@@ -4,8 +4,8 @@ import { TaskService } from './task.service';
 import { UserModule } from 'src/user/user.module';
 
 @Module({
-  controllers: [TaskController],
-  providers: [TaskService],
-  imports: [UserModule],
+    controllers: [TaskController],
+    providers: [TaskService],
+    imports: [UserModule],
 })
 export class TaskModule {}

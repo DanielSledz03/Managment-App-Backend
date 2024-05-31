@@ -4,7 +4,7 @@ import { CompanyController } from './company.controller';
 import { UserService } from 'src/user/user.service';
 
 @Module({
-  providers: [CompanyService, UserService],
-  controllers: [CompanyController],
+    providers: [CompanyService, UserService],
+    controllers: [CompanyController],
 })
 export class CompanyModule {}

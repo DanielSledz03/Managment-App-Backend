@@ -5,5 +5,5 @@ const serviceAccountJson = JSON.stringify(serviceAccount);
 const parsedServiceAccount = JSON.parse(serviceAccountJson);
 
 admin.initializeApp({
-  credential: admin.credential.cert(parsedServiceAccount),
+    credential: admin.credential.cert(parsedServiceAccount),
 });

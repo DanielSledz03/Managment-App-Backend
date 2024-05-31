@@ -4,8 +4,8 @@ import { WorkScheduleService } from './work-schedule.service';
 import { UserModule } from 'src/user/user.module';
 
 @Module({
-  controllers: [WorkScheduleController],
-  providers: [WorkScheduleService],
-  imports: [UserModule],
+    controllers: [WorkScheduleController],
+    providers: [WorkScheduleService],
+    imports: [UserModule],
 })
 export class WorkScheduleModule {}
