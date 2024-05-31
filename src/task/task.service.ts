@@ -15,104 +15,100 @@ export class TaskService {
     private readonly user: UserService,
   ) {}
 
-  async getAllTasks(id: number) {
-    try {
-      const user = await this.prisma.user.findUnique({ where: { id } });
-      if (user.isAdmin) {
-        return await this.prisma.task.findMany();
-      } else {
-        return await this.prisma.task.findMany({
-          where: { userId: id },
-        });
-      }
-    } catch (error) {
-      throw new Error('An error occurred while retrieving the tasks');
+  async getAllTasks(userId: number) {
+    const user = await this.user.getUser(userId);
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+
+    if (user.isAdmin) {
+      return this.prisma.task.findMany();
+    } else {
+      return this.prisma.task.findMany({
+        where: { userId },
+      });
     }
   }
 
   async getTask(id: number) {
-    try {
-      return await this.prisma.task.findUnique({
-        where: { id },
-      });
-    } catch (error) {
+    const task = await this.prisma.task.findUnique({ where: { id } });
+    if (!task) {
       throw new NotFoundException('Task not found');
     }
+    return task;
   }
 
-  async getTasksByUserId(id: number) {
-    console.log({ id });
-    try {
-      const user = await this.user.getUser(id);
-      if (!user) throw new NotFoundException('User not found');
-    } catch (error) {
-      throw error;
+  async getTasksByUserId(userId: number) {
+    const user = await this.user.getUser(userId);
+    if (!user) {
+      throw new NotFoundException('User not found');
     }
 
-    try {
-      const tasks = await this.prisma.task.findMany({
-        where: { userId: id },
-      });
+    const tasks = await this.prisma.task.findMany({
+      where: { userId },
+    });
 
-      if (tasks.length === 0) throw new NotFoundException('Tasks not found');
-
-      return tasks;
-    } catch (error) {
-      throw new NotFoundException('Task not found');
+    if (tasks.length === 0) {
+      throw new NotFoundException('Tasks not found');
     }
+
+    return tasks;
   }
 
   async createTask(dto: CreateTaskDto) {
-    try {
-      const user = await this.user.getUser(dto.userId);
+    const user = await this.user.getUser(dto.userId);
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
 
-      if (!user.isAdmin) {
-        return await this.prisma.task.create({
-          data: {
-            title: dto.title,
-            description: dto.description,
-            status: dto.status ?? 'inprogress',
-            user: {
-              connect: {
-                id: dto.userId,
-              },
+    if (!user.isAdmin) {
+      return this.prisma.task.create({
+        data: {
+          title: dto.title,
+          description: dto.description,
+          status: dto.status ?? 'inprogress',
+          user: {
+            connect: {
+              id: dto.userId,
             },
           },
-        });
-      }
-    } catch (error) {
-      throw error;
+        },
+      });
+    } else {
+      throw new ForbiddenException('Admin cannot create tasks');
     }
   }
 
   async updateTask(id: number, dto: EditTaskDto) {
-    try {
-      const task = await this.prisma.task.findUnique({
+    const task = await this.prisma.task.findUnique({
+      where: { id },
+    });
+
+    if (!task) {
+      throw new NotFoundException('Task not found');
+    }
+
+    const user = await this.user.getUser(task.userId);
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+
+    if (!user.isAdmin) {
+      return this.prisma.task.update({
         where: { id },
-      });
-
-      if (!task) throw new NotFoundException('Task not found');
-      const user = await this.user.getUser(task.userId);
-
-      if (!user.isAdmin) {
-        return await this.prisma.task.update({
-          where: { id },
-          data: {
-            title: dto.title ?? task.title,
-            description: dto.description ?? task.description,
-            status: dto.status ?? task.status,
-            user: {
-              connect: {
-                id: dto.userId ?? task.userId,
-              },
+        data: {
+          title: dto.title ?? task.title,
+          description: dto.description ?? task.description,
+          status: dto.status ?? task.status,
+          user: {
+            connect: {
+              id: dto.userId ?? task.userId,
             },
           },
-        });
-      } else {
-        throw new ForbiddenException('Admin cannot have tasks');
-      }
-    } catch (error) {
-      throw error;
+        },
+      });
+    } else {
+      throw new ForbiddenException('Admin cannot update tasks');
     }
   }
 }

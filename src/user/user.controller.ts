@@ -9,77 +9,131 @@ import {
   Body,
 } from '@nestjs/common';
 import { UserService } from './user.service';
-import { ApiOperation, ApiTags } from '@nestjs/swagger';
-import { AdminGuard } from 'src/auth/guard';
+import {
+  ApiOperation,
+  ApiTags,
+  ApiBearerAuth,
+  ApiResponse,
+  ApiParam,
+  ApiBody,
+} from '@nestjs/swagger';
+import { JwtGuard, AdminGuard } from 'src/auth/guard';
 import { ChangePasswordDto, EditUserDto } from './dto';
 
 @ApiTags('User')
-// @ApiBearerAuth()
+@ApiBearerAuth()
 @Controller('user')
-// @UseGuards(JwtGuard)
+@UseGuards(JwtGuard)
 export class UserController {
   constructor(private userService: UserService) {}
 
   @ApiOperation({
-    summary: 'Get a user by id.',
+    summary: 'Get a user by id',
+  })
+  @ApiParam({
+    name: 'id',
+    description: 'ID of the user',
+    type: Number,
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'User found',
+  })
+  @ApiResponse({
+    status: 404,
+    description: 'User not found',
   })
   @Get('/:id')
   async getUser(@Param('id', ParseIntPipe) id: number) {
-    try {
-      const user = await this.userService.getUser(id);
-
-      return user;
-    } catch (error) {
+    const user = await this.userService.getUser(id);
+    if (!user) {
       throw new NotFoundException('User not found');
     }
+    return user;
   }
 
   @ApiOperation({
-    summary: 'Get all users.',
+    summary: 'Get all users',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Users found',
+  })
+  @ApiResponse({
+    status: 404,
+    description: 'Users not found',
   })
   @Get()
-  async getAllUser() {
-    try {
-      const users = await this.userService.getAllUsers();
-
-      return users;
-    } catch (error) {
+  async getAllUsers() {
+    const users = await this.userService.getAllUsers();
+    if (!users || users.length === 0) {
       throw new NotFoundException('Users not found');
     }
+    return users;
   }
 
   @UseGuards(AdminGuard)
   @ApiOperation({
-    summary: 'Edit a user by id.',
+    summary: 'Edit a user by id',
+  })
+  @ApiParam({
+    name: 'id',
+    description: 'ID of the user to edit',
+    type: Number,
+  })
+  @ApiBody({
+    description: 'Data for editing the user',
+    type: EditUserDto,
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'User edited successfully',
+  })
+  @ApiResponse({
+    status: 404,
+    description: 'User not found',
   })
   @Patch('/:id/edit')
-  async editUserRate(
+  async editUser(
     @Param('id', ParseIntPipe) id: number,
-    @Body() params: EditUserDto,
+    @Body() editUserDto: EditUserDto,
   ) {
-    try {
-      const user = await this.userService.editUser(id, params);
-
-      return user;
-    } catch (error) {
-      throw error;
+    const user = await this.userService.editUser(id, editUserDto);
+    if (!user) {
+      throw new NotFoundException('User not found');
     }
+    return user;
   }
 
   @ApiOperation({
-    summary: 'Change password a user by id.',
+    summary: 'Change password for a user by id',
+  })
+  @ApiParam({
+    name: 'id',
+    description: 'ID of the user to change password for',
+    type: Number,
+  })
+  @ApiBody({
+    description: 'Data for changing the password',
+    type: ChangePasswordDto,
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Password changed successfully',
+  })
+  @ApiResponse({
+    status: 404,
+    description: 'User not found',
   })
   @Patch('/:id/change-password')
   async changePassword(
     @Param('id', ParseIntPipe) id: number,
-    @Body() params: ChangePasswordDto,
+    @Body() changePasswordDto: ChangePasswordDto,
   ) {
-    try {
-      const user = await this.userService.changePassword(id, params);
-
-      return user;
-    } catch (error) {
-      throw error;
+    const user = await this.userService.changePassword(id, changePasswordDto);
+    if (!user) {
+      throw new NotFoundException('User not found');
     }
+    return user;
   }
 }

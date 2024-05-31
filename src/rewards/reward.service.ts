@@ -1,4 +1,8 @@
-import { Injectable } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  InternalServerErrorException,
+} from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { UserService } from 'src/user/user.service';
 import { AddBonusToUserDto } from './dto/add-bonus-to-user.dto';
@@ -11,14 +15,14 @@ export class RewardService {
   ) {}
 
   async addBonusToUser(dto: AddBonusToUserDto) {
+    const user = await this.user.getUser(dto.userId);
+
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+
     try {
-      const user = await this.user.getUser(dto.userId);
-
-      if (!user) {
-        throw new Error('User not found');
-      }
-
-      return this.prisma.bonus.create({
+      return await this.prisma.bonus.create({
         data: {
           amount: dto.amount,
           description: dto.description,
@@ -30,50 +34,53 @@ export class RewardService {
         },
       });
     } catch (error) {
-      throw new Error('An error occurred while adding bonus to user');
+      throw new InternalServerErrorException(
+        'An error occurred while adding bonus to user',
+      );
     }
   }
 
   async getUserMonthlyBonuses(id: number) {
+    const user = await this.user.getUser(id);
+
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+
     try {
-      const user = await this.user.getUser(id);
-
-      if (!user) {
-        throw new Error('User not found');
-      }
-
       const bonuses = await this.prisma.bonus.findMany({
         where: {
           userId: id,
+          createdAt: {
+            gte: new Date(new Date().getFullYear(), new Date().getMonth(), 1),
+            lt: new Date(
+              new Date().getFullYear(),
+              new Date().getMonth() + 1,
+              1,
+            ),
+          },
         },
       });
 
-      const currentMonth = new Date().getMonth();
-      const currentYear = new Date().getFullYear();
-
-      return bonuses.filter((bonus) => {
-        return (
-          new Date(bonus.createdAt).getMonth() === currentMonth &&
-          new Date(bonus.createdAt).getFullYear() === currentYear
-        );
-      });
+      return bonuses;
     } catch (error) {
-      throw new Error('An error occurred while retrieving user bonuses');
+      throw new InternalServerErrorException(
+        'An error occurred while retrieving user bonuses',
+      );
     }
   }
 
   async addPenaltyToUser(dto: AddBonusToUserDto) {
+    const user = await this.user.getUser(dto.userId);
+
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+
     try {
-      const user = await this.user.getUser(dto.userId);
-
-      if (!user) {
-        throw new Error('User not found');
-      }
-
-      return this.prisma.penalty.create({
+      return await this.prisma.penalty.create({
         data: {
           amount: dto.amount,
-
           description: dto.description,
           user: {
             connect: {
@@ -83,35 +90,39 @@ export class RewardService {
         },
       });
     } catch (error) {
-      throw new Error('An error occurred while adding penalty to user');
+      throw new InternalServerErrorException(
+        'An error occurred while adding penalty to user',
+      );
     }
   }
 
   async getUserMonthlyPenalties(id: number) {
+    const user = await this.user.getUser(id);
+
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+
     try {
-      const user = await this.user.getUser(id);
-
-      if (!user) {
-        throw new Error('User not found');
-      }
-
       const penalties = await this.prisma.penalty.findMany({
         where: {
           userId: id,
+          createdAt: {
+            gte: new Date(new Date().getFullYear(), new Date().getMonth(), 1),
+            lt: new Date(
+              new Date().getFullYear(),
+              new Date().getMonth() + 1,
+              1,
+            ),
+          },
         },
       });
 
-      const currentMonth = new Date().getMonth();
-      const currentYear = new Date().getFullYear();
-
-      return penalties.filter((penalty) => {
-        return (
-          new Date(penalty.createdAt).getMonth() === currentMonth &&
-          new Date(penalty.createdAt).getFullYear() === currentYear
-        );
-      });
+      return penalties;
     } catch (error) {
-      throw new Error('An error occurred while retrieving user penalties');
+      throw new InternalServerErrorException(
+        'An error occurred while retrieving user penalties',
+      );
     }
   }
 }
