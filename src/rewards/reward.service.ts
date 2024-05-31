@@ -3,9 +3,9 @@ import {
     NotFoundException,
     InternalServerErrorException,
 } from '@nestjs/common';
-import { PrismaService } from '@/src/prisma/prisma.service';
 import { UserService } from 'src/user/user.service';
 import { AddBonusToUserDto } from './dto/add-bonus-to-user.dto';
+import { PrismaService } from 'src/prisma/prisma.service';
 
 @Injectable()
 export class RewardService {
