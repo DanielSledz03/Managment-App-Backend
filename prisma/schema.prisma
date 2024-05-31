@@ -38,6 +38,7 @@ model User {
   companies            CompanyUser[]
   bonuses              Bonus[]
   penalties            Penalty[]
+  workSchedules        WorkSchedule[]
   earningPerHour       Float?
 }
 
@@ -93,7 +94,6 @@ model Bonus {
   updatedAt   DateTime @updatedAt
   amount      Float
   description String
-  date        DateTime //usuń
 }
 
 model Penalty {
@@ -104,5 +104,16 @@ model Penalty {
   updatedAt   DateTime @updatedAt
   amount      Float
   description String
-  date        DateTime //usuń
+}
+
+
+model WorkSchedule {
+  id          Int      @id @default(autoincrement())
+  userId      Int
+  user        User     @relation(fields: [userId], references: [id])
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  date        DateTime
+  startTime   String
+  endTime     String
 }
