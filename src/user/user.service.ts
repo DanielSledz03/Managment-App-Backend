@@ -92,6 +92,116 @@ export class UserService {
         return HttpStatus.OK;
     }
 
+    async getUserAllEarningThisMonth(id: number) {
+        const user = await this.prisma.user.findUnique({ where: { id } });
+
+        if (!user) {
+            throw new NotFoundException('User not found');
+        }
+
+        const currentMonth = new Date().getMonth();
+        const currentYear = new Date().getFullYear();
+
+        try {
+            const [allUserShifts, allBonuses, allPenalties] = await Promise.all(
+                [
+                    this.prisma.shift.findMany({ where: { userId: id } }),
+                    this.prisma.bonus.findMany({ where: { userId: id } }),
+                    this.prisma.penalty.findMany({ where: { userId: id } }),
+                ],
+            );
+
+            const isCurrentMonth = (date: Date) =>
+                date.getMonth() === currentMonth &&
+                date.getFullYear() === currentYear;
+
+            const userShiftsThisMonth = allUserShifts.filter((shift) =>
+                isCurrentMonth(new Date(shift.startTime)),
+            );
+
+            const totalHours = userShiftsThisMonth.reduce((total, shift) => {
+                const shiftDuration =
+                    (new Date(shift.endTime).getTime() -
+                        new Date(shift.startTime).getTime()) /
+                    (1000 * 60 * 60);
+                return total + shiftDuration;
+            }, 0);
+
+            const userBonusesThisMonth = allBonuses.filter((bonus) =>
+                isCurrentMonth(new Date(bonus.createdAt)),
+            );
+
+            const userPenaltiesThisMonth = allPenalties.filter((penalty) =>
+                isCurrentMonth(new Date(penalty.createdAt)),
+            );
+
+            const totalBonuses = userBonusesThisMonth.reduce(
+                (total, bonus) => total + bonus.amount,
+                0,
+            );
+            const totalPenalties = userPenaltiesThisMonth.reduce(
+                (total, penalty) => total + penalty.amount,
+                0,
+            );
+
+            const totalEarnings =
+                totalHours * user.earningPerHour +
+                totalBonuses -
+                totalPenalties;
+
+            return totalEarnings.toFixed(0);
+        } catch (error) {
+            throw new NotFoundException('Earning not found');
+        }
+    }
+
+    async getUserAllShiftsThisMonth(id: number) {
+        const user = await this.prisma.user.findUnique({ where: { id } });
+
+        if (!user) {
+            throw new NotFoundException('User not found');
+        }
+
+        const currentMonth = new Date().getMonth();
+        const currentYear = new Date().getFullYear();
+
+        try {
+            const allUserShifts = await this.prisma.shift.findMany({
+                where: { userId: id },
+            });
+
+            const isCurrentMonth = (date: Date) =>
+                date.getMonth() === currentMonth &&
+                date.getFullYear() === currentYear;
+
+            const userShiftsThisMonth = allUserShifts.filter((shift) =>
+                isCurrentMonth(new Date(shift.startTime)),
+            );
+
+            const totalDurationInSeconds = userShiftsThisMonth
+                .map((shift) => {
+                    const shiftDuration =
+                        (new Date(shift.endTime).getTime() -
+                            new Date(shift.startTime).getTime()) /
+                        1000;
+                    return shiftDuration;
+                })
+                .reduce((total, duration) => total + duration, 0);
+
+            const hours = Math.floor(totalDurationInSeconds / 3600);
+            const minutes = Math.floor((totalDurationInSeconds % 3600) / 60);
+            const seconds = Math.floor(totalDurationInSeconds % 60);
+
+            return {
+                hours: hours < 10 ? `0${hours}` : hours,
+                minutes: minutes < 10 ? `0${minutes}` : minutes,
+                seconds: seconds < 10 ? `0${seconds}` : seconds,
+            };
+        } catch (error) {
+            throw new NotFoundException('Shifts not found');
+        }
+    }
+
     private sanitizeUser(user: User): SanitizedUser {
         const sanitizedUser = { ...user };
         delete sanitizedUser.hash;

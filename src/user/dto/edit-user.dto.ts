@@ -1,3 +1,4 @@
+import { Optional } from '@nestjs/common';
 import { ApiProperty } from '@nestjs/swagger';
 import { IsNotEmpty, IsNumber, IsString, IsBoolean } from 'class-validator';
 
@@ -9,6 +10,7 @@ export class EditUserDto {
     })
     @IsString()
     @IsNotEmpty()
+    @Optional()
     name?: string;
 
     @ApiProperty({
@@ -18,6 +20,7 @@ export class EditUserDto {
     })
     @IsNumber()
     @IsNotEmpty()
+    @Optional()
     rate?: number;
 
     @ApiProperty({
@@ -27,6 +30,7 @@ export class EditUserDto {
     })
     @IsBoolean()
     @IsNotEmpty()
+    @Optional()
     archived?: boolean;
 
     @ApiProperty({
@@ -36,5 +40,6 @@ export class EditUserDto {
     })
     @IsNumber()
     @IsNotEmpty()
+    @Optional()
     adminUserId: number;
 }

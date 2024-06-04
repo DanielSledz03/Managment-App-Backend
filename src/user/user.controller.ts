@@ -2,7 +2,6 @@ import {
     Controller,
     Get,
     Param,
-    UseGuards,
     NotFoundException,
     ParseIntPipe,
     Patch,
@@ -12,19 +11,17 @@ import { UserService } from './user.service';
 import {
     ApiOperation,
     ApiTags,
-    ApiBearerAuth,
     ApiResponse,
     ApiParam,
     ApiBody,
 } from '@nestjs/swagger';
 import { ChangePasswordDto, EditUserDto } from './dto';
 import { SanitizedUser } from './types/sanitized-user.type';
-import { AdminGuard, JwtGuard } from '../auth/guard';
 
 @ApiTags('User')
-@ApiBearerAuth()
+// @ApiBearerAuth()
 @Controller('user')
-@UseGuards(JwtGuard)
+// @UseGuards(JwtGuard)
 export class UserController {
     constructor(private userService: UserService) {}
 
@@ -73,7 +70,7 @@ export class UserController {
         return users;
     }
 
-    @UseGuards(AdminGuard)
+    // @UseGuards(AdminGuard)
     @ApiOperation({
         summary: 'Edit a user by id',
     })
@@ -139,5 +136,55 @@ export class UserController {
             throw new NotFoundException('User not found');
         }
         return user;
+    }
+
+    @ApiOperation({
+        summary: 'Get all earnings for a user this month',
+    })
+    @ApiParam({
+        name: 'id',
+        description: 'ID of the user to get earnings for',
+        type: Number,
+    })
+    @ApiResponse({
+        status: 200,
+        description: 'Earnings found',
+    })
+    @ApiResponse({
+        status: 404,
+        description: 'User not found',
+    })
+    @Get('/:id/earnings')
+    async getUserAllEarningThisMonth(@Param('id', ParseIntPipe) id: number) {
+        const earnings = await this.userService.getUserAllEarningThisMonth(id);
+        if (earnings === null || earnings === undefined) {
+            throw new NotFoundException('User not found');
+        }
+        return earnings;
+    }
+
+    @ApiOperation({
+        summary: 'Get sum of shifts for a user this month',
+    })
+    @ApiParam({
+        name: 'id',
+        description: 'ID of the user to get shifts for',
+        type: Number,
+    })
+    @ApiResponse({
+        status: 200,
+        description: 'Shifts found',
+    })
+    @ApiResponse({
+        status: 404,
+        description: 'User not found',
+    })
+    @Get('/:id/shifts')
+    async getUserAllShiftsThisMonth(@Param('id', ParseIntPipe) id: number) {
+        const shifts = await this.userService.getUserAllShiftsThisMonth(id);
+        if (shifts === null || shifts === undefined) {
+            throw new NotFoundException('User not found');
+        }
+        return shifts;
     }
 }
