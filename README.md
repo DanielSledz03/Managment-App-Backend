@@ -22,7 +22,6 @@ Backend API for business management and employee oversight, built with NestJS fo
 - **Company Management**: Multi-company support with user roles
 - **API Documentation**: Swagger/OpenAPI documentation
 - **Validation**: Request validation with class-validator
-- **Testing**: Jest testing framework with coverage
 
 ## 🛠️ Tech Stack
 
