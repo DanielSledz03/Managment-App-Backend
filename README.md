@@ -6,7 +6,7 @@
 [![Prisma](https://img.shields.io/badge/Prisma-5.14.0-2D3748?style=for-the-badge&logo=prisma)](https://www.prisma.io/)
 [![Docker](https://img.shields.io/badge/Docker-3.8-2496ED?style=for-the-badge&logo=docker)](https://www.docker.com/)
 
-Professional backend API for business management and employee oversight, built with NestJS for scalable and maintainable server-side applications.
+Backend API for business management and employee oversight, built with NestJS for scalable and maintainable server-side applications.
 
 > **⚠️ Project Status**: This project was developed between 2023-2024 but remains incomplete. Development work has been temporarily suspended.
 
